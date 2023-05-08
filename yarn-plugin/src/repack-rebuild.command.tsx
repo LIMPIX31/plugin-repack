@@ -2,6 +2,8 @@ import { RepackBaseCommand } from './repack-base.command'
 import { Option } from 'clipanion'
 import { Cache, Configuration, formatUtils, MessageName, Project, StreamReport, structUtils } from '@yarnpkg/core'
 import { ppath, xfs } from '@yarnpkg/fslib'
+import { fetchCargoWorkspaces } from './crate-utils'
+import { CrateResolver } from './resolver'
 
 export class RepackRebuildCommand extends RepackBaseCommand {
   static paths = [['repack', 'rebuild']]
@@ -21,35 +23,45 @@ export class RepackRebuildCommand extends RepackBaseCommand {
       async (report) => {
         let stop!: boolean | undefined
 
+        const valid = await this.validateProject(project.cwd, report)
+
+        if (!valid) {
+          return
+        }
+
         stop = await report.startTimerPromise('Cleaning previous build(s)', async () => {
-          for (const ident of this.idents) {
-            const locator = structUtils.parseLocator(ident, false)
+          const workspaces = await fetchCargoWorkspaces(project.cwd)
 
-            const mirrorEntryPath = cache.getLocatorMirrorPath(locator)
-            const cacheEntryPath = cache.getLocatorPath(locator, project.storedChecksums.get(locator.locatorHash) ?? null)
+          for (const { path, manifest } of workspaces!) {
+            if (this.idents.length === 0 || this.idents.includes(manifest.package.name) || this.idents.includes('*')) {
+              const locator = structUtils.parseLocator(`${manifest.package.name}@${CrateResolver.protocol}${path}`)
 
-            if (!mirrorEntryPath && !cacheEntryPath) {
-              return true
-            }
+              const mirrorEntryPath = cache.getLocatorMirrorPath(locator)
+              const cacheEntryPath = cache.getLocatorPath(locator, project.storedChecksums.get(locator.locatorHash) ?? null)
 
-            project.storedChecksums.delete(locator.locatorHash)
+              if (!mirrorEntryPath && !cacheEntryPath) {
+                return true
+              }
 
-            if (cache.immutable) {
-              report.reportError(MessageName.IMMUTABLE_CACHE, `${formatUtils.pretty(configuration, ppath.basename(cacheEntryPath ?? mirrorEntryPath!), `magenta`)} cannot be rebuild, because the cache is immutable`)
-              return true
-            } else {
-              if ((cacheEntryPath && await xfs.existsPromise(cacheEntryPath)) || (mirrorEntryPath && await xfs.existsPromise(mirrorEntryPath))) {
-                report.reportInfo(MessageName.UNUSED_CACHE_ENTRY, `${formatUtils.pretty(configuration, ppath.basename(cacheEntryPath ?? mirrorEntryPath!), `magenta`)}`)
+              project.storedChecksums.delete(locator.locatorHash)
+
+              if (cache.immutable) {
+                report.reportError(MessageName.IMMUTABLE_CACHE, `${formatUtils.pretty(configuration, ppath.basename(cacheEntryPath ?? mirrorEntryPath!), `magenta`)} cannot be rebuild, because the cache is immutable`)
+                return true
               } else {
-                report.reportInfo(MessageName.UNNAMED, `${formatUtils.pretty(configuration, ppath.basename(cacheEntryPath ?? mirrorEntryPath!), `red`)}`)
-              }
+                if ((cacheEntryPath && await xfs.existsPromise(cacheEntryPath)) || (mirrorEntryPath && await xfs.existsPromise(mirrorEntryPath))) {
+                  report.reportInfo(MessageName.UNUSED_CACHE_ENTRY, `${formatUtils.pretty(configuration, ppath.basename(cacheEntryPath ?? mirrorEntryPath!), `magenta`)}`)
+                } else {
+                  report.reportInfo(MessageName.UNNAMED, `${formatUtils.pretty(configuration, ppath.basename(cacheEntryPath ?? mirrorEntryPath!), `red`)}`)
+                }
 
-              if (mirrorEntryPath) {
-                await xfs.removePromise(mirrorEntryPath)
-              }
+                if (mirrorEntryPath) {
+                  await xfs.removePromise(mirrorEntryPath)
+                }
 
-              if (cacheEntryPath) {
-                await xfs.removePromise(cacheEntryPath)
+                if (cacheEntryPath) {
+                  await xfs.removePromise(cacheEntryPath)
+                }
               }
             }
           }

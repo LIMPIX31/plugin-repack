@@ -1410,7 +1410,7 @@ __metadata:
 "hello-world@crate:*":
   version: 0.1.0
   resolution: "hello-world@crate:crates/hello-world"
-  checksum: 3bc597e30c06a41e7e6e69ef7ad2524b3b87d91770ca3e8412a357071306bf37dfe6fab24897a7a91c89146be6732701e83439af2641a141f61dcf0476199c2c
+  checksum: 825a6438391ecc485fbc88b3843f69f97557f26df1c80b498ee58feda22bec124183940279d0d56f2c2ca7d0dc459838c5d1f5da66b8bc24878d69e520c5128f
   languageName: node
   linkType: hard
 
@@ -1616,7 +1616,7 @@ __metadata:
 "just-lib@crate:*":
   version: 0.1.0
   resolution: "just-lib@crate:crates/just-lib"
-  checksum: d4ba668656f5e756c2a58a59049472db09b9dcd1d424f590180a9fb9ab99b8cd96b44df0a64b2cd35a5a14b71e8a016397749d71b346acde19b20b6ec9021359
+  checksum: 318f294112a661398fb0abb361309c0d00ade0dbe541c293f83b3c21d34126389e8ecea84ed33ab65200aebba4f2b5d5e7e18d56d749c6f4a7d442054b627d75
   languageName: node
   linkType: hard
 

@@ -1,6 +1,6 @@
 import { BaseCommand } from '@yarnpkg/cli'
 import { Configuration, MessageName, Project, StreamReport } from '@yarnpkg/core'
-import { Filename, ppath } from '@yarnpkg/fslib'
+import { PortablePath, ppath } from '@yarnpkg/fslib'
 import { REPACK_INSTALL_LOCATION } from './constants'
 import {
   fetchBinaryenVersion,
@@ -12,6 +12,7 @@ import {
   isSupportedCargoVersion,
   isSupportedRustupVersion,
 } from 'repack'
+import { fetchCargoWorkspaces } from './crate-utils'
 
 export abstract class RepackBaseCommand extends BaseCommand {
   abstract execute(): Promise<number | void>
@@ -68,5 +69,24 @@ export abstract class RepackBaseCommand extends BaseCommand {
     }
 
     return true
+  }
+
+  protected async validateWorkspaces(cwd: PortablePath, report: StreamReport): Promise<boolean> {
+    const workspaces = await fetchCargoWorkspaces(cwd)
+
+    if (!workspaces) {
+      report.reportError(MessageName.UNNAMED, 'This project has no cargo workspaces')
+      return false
+    }
+    
+    return true
+  }
+  
+  protected async validateProject(cwd: PortablePath, report: StreamReport): Promise<boolean> {
+    const env = await this.validateEnv(report)
+    const installation = await this.validateInstall(report)
+    const workspaces = await this.validateWorkspaces(cwd, report)
+
+    return env && installation && workspaces
   }
 }
