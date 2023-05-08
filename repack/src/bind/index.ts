@@ -17,11 +17,11 @@ export function isSupportedBindgenVersion(version: string) {
   return satisfies(version, BINDGEN_SUPPORTED_VERSIONS)
 }
 
-export async function bindgen(
+export function bindgen(
   cwd: string,
   target: 'web' | 'bundler' | 'nodejs' | 'no-modules' | 'deno',
   wasm: string,
   outDir: string
 ) {
-  await $({ cwd })`./wasm-bindgen --target ${target} --typescript --weak-refs --reference-types --out-name index --out-dir ${outDir} ${wasm}`
+  return $({ cwd })`./wasm-bindgen --target ${target} --typescript --weak-refs --reference-types --out-name index --out-dir ${outDir} ${wasm}`
 }

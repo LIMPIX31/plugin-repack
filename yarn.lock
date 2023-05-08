@@ -1220,6 +1220,7 @@ __metadata:
   resolution: "example-bindings@workspace:example-bindings"
   dependencies:
     hello-world: "crate:*"
+    just-lib: "crate:*"
   languageName: unknown
   linkType: soft
 
@@ -1407,9 +1408,9 @@ __metadata:
   linkType: hard
 
 "hello-world@crate:*":
-  version: "crate:0.1.0"
-  resolution: "hello-world@crate:0.1.0"
-  checksum: 23a441b42ef5b0702bfeaa59be914145a823530d77b96a69af4d18300ab6ac69e8a77ff28abda94a0d4fe27380446e0867b80791fc638566c837edc8cf40dc7d
+  version: 0.1.0
+  resolution: "hello-world@crate:crates/hello-world"
+  checksum: 3bc597e30c06a41e7e6e69ef7ad2524b3b87d91770ca3e8412a357071306bf37dfe6fab24897a7a91c89146be6732701e83439af2641a141f61dcf0476199c2c
   languageName: node
   linkType: hard
 
@@ -1609,6 +1610,13 @@ __metadata:
   version: 3.0.1
   resolution: "json-buffer@npm:3.0.1"
   checksum: 33bf05e0790ed025751047b51bb8bc0f15942be22d22acaa071c44a4e3277bdf23132f49549a7d8dd89ee67679923f21efa21de2aaa448472372e92a837cea15
+  languageName: node
+  linkType: hard
+
+"just-lib@crate:*":
+  version: 0.1.0
+  resolution: "just-lib@crate:crates/just-lib"
+  checksum: d4ba668656f5e756c2a58a59049472db09b9dcd1d424f590180a9fb9ab99b8cd96b44df0a64b2cd35a5a14b71e8a016397749d71b346acde19b20b6ec9021359
   languageName: node
   linkType: hard
 

@@ -10,7 +10,8 @@ import {
   semverUtils,
   structUtils,
 } from '@yarnpkg/core'
-import { fetchCargoWorkspaces } from './crateUtils'
+import { fetchCargoWorkspaces, readCargoToml } from './crate-utils'
+import { PortablePath, ppath } from '@yarnpkg/fslib'
 
 export class CrateResolver implements Resolver {
   static protocol = 'crate:'
@@ -49,21 +50,24 @@ export class CrateResolver implements Resolver {
     }
 
     const candidates = miscUtils.mapAndFilter(workspaces, workspace => {
+      if (workspace.manifest.package.name !== descriptor.name) {
+        return miscUtils.mapAndFilter.skip
+      }
+
       try {
         const candidate = new semverUtils.SemVer(workspace.manifest.package.version)
 
         if (range.test(candidate)) {
           return { candidate, ...workspace }
         }
-      } catch {
-      }
+      } catch {}
 
       return miscUtils.mapAndFilter.skip
     })
 
     candidates.sort(({ candidate: a }, { candidate: b }) => -a.compare(b))
 
-    return candidates.map(workspace => structUtils.makeLocator(descriptor, `${CrateResolver.protocol}${workspace.candidate.raw}`))
+    return candidates.map(workspace => structUtils.makeLocator(descriptor, `${CrateResolver.protocol}${workspace.path}`))
   }
 
   async getSatisfying(descriptor: Descriptor, dependencies: Record<string, Package>, locators: Array<Locator>, opts: ResolveOptions): Promise<{
@@ -85,10 +89,17 @@ export class CrateResolver implements Resolver {
   }
 
   async resolve(locator: Locator, opts: ResolveOptions): Promise<Package> {
+    const workspacePath = ppath.join(
+      opts.project.cwd,
+      locator.reference.slice(CrateResolver.protocol.length) as PortablePath
+    )
+
+    const manifest = await readCargoToml(workspacePath)
+
     return {
       ...locator,
 
-      version: locator.reference,
+      version: manifest!.package.version ?? '0.0.0',
 
       languageName: 'node',
       linkType: LinkType.HARD,

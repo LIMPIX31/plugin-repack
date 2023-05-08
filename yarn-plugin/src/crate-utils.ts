@@ -8,6 +8,9 @@ export interface CargoToml {
   }
   workspace?: {
     members?: string[]
+  },
+  repack?: {
+    target?: 'web' | 'bundler' | 'nodejs' | 'no-modules' | 'deno'
   }
 }
 
@@ -46,7 +49,7 @@ export async function fetchCargoWorkspaces(cwd: PortablePath): Promise<CargoWork
 
   const workspaces = members
       .filter(m => typeof m === 'string')
-      .map(m => ppath.join(cwd, m as PortablePath))
+      .map(m => m as PortablePath)
 
   const candidates = await Promise.all(workspaces.map(async m => ({ manifest: await readCargoToml(m), path: m })))
 

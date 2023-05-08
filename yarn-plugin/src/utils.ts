@@ -1,20 +1,25 @@
-import { FetchOptions, formatUtils, MessageName } from '@yarnpkg/core'
+import { FetchOptions, formatUtils, Locator, MessageName, structUtils } from '@yarnpkg/core'
 
-export function reportCargoBuildOutput(opts: FetchOptions, data: string, splitSkip = false) {
+export function reportCargoBuildOutput(locator: Locator, opts: FetchOptions, data: string, splitSkip = false) {
   if (!splitSkip) {
-    data?.split('\n').filter(line => line.trim() !== '').forEach(line => reportCargoBuildOutput(opts, line, true))
+    data?.split('\n').filter(line => line.trim() !== '').forEach(line => reportCargoBuildOutput(locator, opts, line, true))
     return
   }
 
   const trimmed = data.trim().replaceAll('\n', '')
 
+  if (trimmed.includes('unused manifest key: repack')) {
+    return
+  }
+
+  const { configuration: conf } = opts.project
+
   if (trimmed.startsWith('Compiling')) {
     const [, name, semver, dir = ''] = trimmed.match(/^Compiling\s(.+?)\sv(.+?)(\(.+?)?$/) ?? []
 
     if (name && semver) {
-      const { configuration: conf } = opts.project
-
       opts.report.reportInfo(MessageName.UNNAMED, [
+        formatUtils.pretty(conf, `${structUtils.stringifyIdent(locator)}: `, 'gray'),
         formatUtils.pretty(conf, 'compiling ', 'green'),
         formatUtils.pretty(conf, name, 'magenta'),
         formatUtils.pretty(conf, `@${semver.replaceAll('\n', '')}`, 'gray'),
@@ -24,5 +29,5 @@ export function reportCargoBuildOutput(opts: FetchOptions, data: string, splitSk
     }
   }
 
-  opts.report.reportInfo(MessageName.UNNAMED, data.trim())
+  opts.report.reportInfo(MessageName.UNNAMED, formatUtils.pretty(conf, `${structUtils.stringifyIdent(locator)}: ${data.trim()}`, 'gray'))
 }

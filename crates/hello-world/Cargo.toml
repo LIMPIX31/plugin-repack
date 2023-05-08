@@ -8,3 +8,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wasm-bindgen = "0.2"
+just-lib = { path = "../just-lib" }
+
+[repack]
+target = "nodejs"

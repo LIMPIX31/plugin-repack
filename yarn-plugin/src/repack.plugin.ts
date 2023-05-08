@@ -7,5 +7,5 @@ import { RepackRebuildCommand } from './repack-rebuild.command'
 export const plugin: Plugin = {
   commands: [RepackInstallCommand, RepackRebuildCommand],
   resolvers: [CrateResolver],
-  fetchers: [CrateFetcher]
+  fetchers: [CrateFetcher],
 }

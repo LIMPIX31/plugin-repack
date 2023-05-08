@@ -1775,7 +1775,8 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./example-bindings/",\
         "packageDependencies": [\
           ["example-bindings", "workspace:example-bindings"],\
-          ["hello-world", "crate:0.1.0"]\
+          ["hello-world", "crate:crates/hello-world"],\
+          ["just-lib", "crate:crates/just-lib"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -1989,10 +1990,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["hello-world", [\
-      ["crate:0.1.0", {\
-        "packageLocation": "./.yarn/cache/hello-world-crate-0.1.0-cb390adc58-23a441b42e.zip/node_modules/hello-world/",\
+      ["crate:crates/hello-world", {\
+        "packageLocation": "./.yarn/cache/hello-world-crate-e45092aa03-3bc597e30c.zip/node_modules/hello-world/",\
         "packageDependencies": [\
-          ["hello-world", "crate:0.1.0"]\
+          ["hello-world", "crate:crates/hello-world"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -2244,6 +2245,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/json-buffer-npm-3.0.1-f8f6d20603-33bf05e079.zip/node_modules/json-buffer/",\
         "packageDependencies": [\
           ["json-buffer", "npm:3.0.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["just-lib", [\
+      ["crate:crates/just-lib", {\
+        "packageLocation": "./.yarn/cache/just-lib-crate-13a45c1261-d4ba668656.zip/node_modules/just-lib/",\
+        "packageDependencies": [\
+          ["just-lib", "crate:crates/just-lib"]\
         ],\
         "linkType": "HARD"\
       }]\
