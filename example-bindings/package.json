@@ -1,0 +1,7 @@
+{
+  "name": "example-bindings",
+  "main": "src/index.ts",
+  "dependencies": {
+    "hello-world": "crate:*"
+  }
+}
