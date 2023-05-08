@@ -16,3 +16,7 @@ export async function fetchBinaryenVersion(cwd: string, bin = 'wasm-opt'): Promi
 export async function isSupportedBinaryenVersion(version: string) {
   return satisfies(version, BINARYEN_SUPPORTED_VERSIONS)
 }
+
+export function optimize(cwd: string, file: string, level: 0 | 1 | 2 | 3 | 4) {
+  return $({ cwd })`./wasm-opt ${file} -o ${file} -O${level === 0 ? 's' : level} --enable-reference-types`
+}

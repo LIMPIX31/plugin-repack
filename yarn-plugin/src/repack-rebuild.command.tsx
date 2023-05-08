@@ -2,10 +2,12 @@ import { RepackBaseCommand } from './repack-base.command'
 import { Option } from 'clipanion'
 import { Cache, Configuration, formatUtils, MessageName, Project, StreamReport, structUtils } from '@yarnpkg/core'
 import { ppath, xfs } from '@yarnpkg/fslib'
+import { RELEASE_BUILD } from './constants'
 
 export class RepackRebuildCommand extends RepackBaseCommand {
   static paths = [['repack', 'rebuild']]
 
+  release = Option.Boolean('-r, --release')
   idents = Option.Rest()
 
   async execute() {
@@ -55,6 +57,10 @@ export class RepackRebuildCommand extends RepackBaseCommand {
         })
 
         if (stop) return
+
+        if (this.release) {
+          configuration.values.set('repack-release', true)
+        }
 
         await project.install({
           report,

@@ -1,11 +1,11 @@
-import { bindgen, cargoBuild } from 'repack'
+import { bindgen, cargoBuild, optimize } from 'repack'
 import { PortablePath, ppath, xfs } from '@yarnpkg/fslib'
-import { FetchOptions, Locator, tgzUtils } from '@yarnpkg/core'
-import { REPACK_INSTALL_LOCATION } from './constants'
+import { FetchOptions, Locator, Project, tgzUtils } from '@yarnpkg/core'
+import { RELEASE_BUILD, REPACK_INSTALL_LOCATION } from './constants'
 import { createPackage } from './create-package'
 import { reportCargoBuildOutput } from './utils'
 
-export async function buildCrate(locator: Locator, cwd: PortablePath, opts: FetchOptions) {
+export async function buildCrate(locator: Locator, project: Project, opts: FetchOptions) {
   const tempDir = await xfs.mktempPromise()
 
   const packagePath = ppath.join(tempDir, 'node_modules', locator.name as PortablePath)
@@ -23,12 +23,24 @@ export async function buildCrate(locator: Locator, cwd: PortablePath, opts: Fetc
   }
 
   return await opts.report.startTimerPromise(`Compiling [${locator.name}]`, async () => {
-    const cargoChild = cargoBuild(cwd, packagePath)
+    const optimization = project.configuration.values.get('repack-release')
+
+    const cargoChild = cargoBuild(project.cwd, packagePath, optimization)
     cargoChild.stdout?.on('data', data => handleStdout(data))
     cargoChild.stderr?.on('data', data => handleStdout(data))
     await cargoChild
 
-    await bindgen(ppath.join(cwd, REPACK_INSTALL_LOCATION), 'web', ppath.join(packagePath, `${locator.name.replaceAll('-','_')}.wasm`), packagePath)
+    const outname = ppath.join(packagePath, `${locator.name.replaceAll('-','_')}.wasm`)
+    const repackCwd = ppath.join(project.cwd, REPACK_INSTALL_LOCATION)
+
+    await bindgen(repackCwd, 'web', outname, packagePath)
+    
+    await xfs.unlinkPromise(outname)
+
+    const opt = optimize(repackCwd, ppath.join(packagePath, `index_bg.wasm`), optimization ? 3 : 0)
+    opt.stdout?.on('data', data => handleStdout(data))
+    opt.stderr?.on('data', data => handleStdout(data))
+    await opt
 
     await xfs.writeFilePromise(ppath.join(packagePath, 'package.json'), JSON.stringify(createPackage(locator), null, 2))
     const tgz = await tgzUtils.makeArchiveFromDirectory(tempDir)

@@ -1409,7 +1409,7 @@ __metadata:
 "hello-world@crate:*":
   version: "crate:0.1.0"
   resolution: "hello-world@crate:0.1.0"
-  checksum: 67d169ce7afe3e320ad67d8b09a262b230b403ef4a873e133614099b323f0af4528bd7b678ff6b59a9435c54d0228d9774fafd4fd8a8b2cc5f4a64e27c083d7d
+  checksum: 23a441b42ef5b0702bfeaa59be914145a823530d77b96a69af4d18300ab6ac69e8a77ff28abda94a0d4fe27380446e0867b80791fc638566c837edc8cf40dc7d
   languageName: node
   linkType: hard
 

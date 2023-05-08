@@ -39,10 +39,10 @@ export async function hasWasm32installed(): Promise<boolean> {
   return stdout.includes('wasm32-unknown-unknown')
 }
 
-export function cargoBuild(cwd: string, outDir: string) {
+export function cargoBuild(cwd: string, outDir: string, release = false) {
   return execa(
     'cargo',
-    `build --lib --target wasm32-unknown-unknown --out-dir ${outDir} -Z unstable-options`.split(' '),
+    `build --lib --target wasm32-unknown-unknown --out-dir ${outDir} -Z unstable-options${release ? ' -r' : ''}`.split(' '),
     {
       cwd,
     }

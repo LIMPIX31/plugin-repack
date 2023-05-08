@@ -1990,7 +1990,7 @@ const RAW_RUNTIME_STATE =
     ]],\
     ["hello-world", [\
       ["crate:0.1.0", {\
-        "packageLocation": "./.yarn/cache/hello-world-crate-0.1.0-cb390adc58-67d169ce7a.zip/node_modules/hello-world/",\
+        "packageLocation": "./.yarn/cache/hello-world-crate-0.1.0-cb390adc58-23a441b42e.zip/node_modules/hello-world/",\
         "packageDependencies": [\
           ["hello-world", "crate:0.1.0"]\
         ],\
