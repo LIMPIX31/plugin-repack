@@ -1,5 +1,5 @@
 import { RepackBaseCommand } from './repack-base.command'
-import { Configuration, MessageName, Project, StreamReport } from '@yarnpkg/core'
+import { Configuration, formatUtils, MessageName, Project, StreamReport } from '@yarnpkg/core'
 import { Option } from 'clipanion'
 import { catchError, lastValueFrom, map, Observable, of } from 'rxjs'
 import { download, extractFiles, fetchBinaryenAsset, fetchWasmBindgenAsset } from 'repack'
@@ -111,8 +111,7 @@ export class RepackInstallCommand extends RepackBaseCommand {
           await xfs.unlinkPromise(await this.installationPath('binaryen.tgz'))
         })
 
-        report.reportInfo(MessageName.UNNAMED, 'Repack plugin installed successfully')
-        report.reportInfo(MessageName.UNNAMED, 'Run `yarn repack build @crate/my-crate` to build your rust crate')
+        report.reportInfo(MessageName.UNNAMED, formatUtils.pretty(configuration, 'Repack plugin installed successfully', 'green'))
       },
     )
 

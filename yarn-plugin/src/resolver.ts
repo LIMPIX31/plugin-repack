@@ -10,8 +10,7 @@ import {
   semverUtils,
   structUtils,
 } from '@yarnpkg/core'
-import { fetchCargoWorkspaces, readCargoToml } from './crateUtils'
-import { PortablePath } from '@yarnpkg/fslib'
+import { fetchCargoWorkspaces } from './crateUtils'
 
 export class CrateResolver implements Resolver {
   static protocol = 'crate:'
