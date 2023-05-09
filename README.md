@@ -55,7 +55,9 @@ yarn
 # Try rebuild only hello-world
 yarn repack rebuild hello-world
 # Try rebuild all crates
-yarn repack rebuild hello-world
+yarn repack rebuild
+# Try rebuild hello-world crate for release
+yarn repack rebuild --release hello-world
 ```
 
 ### Import your crate
