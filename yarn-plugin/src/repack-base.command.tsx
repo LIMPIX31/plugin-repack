@@ -7,6 +7,7 @@ import {
   fetchBindgenVersion,
   fetchCargoVersion,
   fetchRustupVersion,
+  hasWasm32installed,
   isSupportedBinaryenVersion,
   isSupportedBindgenVersion,
   isSupportedCargoVersion,
@@ -48,6 +49,13 @@ export abstract class RepackBaseCommand extends BaseCommand {
       report.reportWarning(MessageName.UNNAMED, `Rustup ${rustupVersion} is not supported`)
     }
 
+    const wasm32Installed = await hasWasm32installed()
+
+    if (!wasm32Installed) {
+      report.reportError(MessageName.UNNAMED, 'Missing wasm32-unknown-unknown target')
+      return false
+    }
+
     return true
   }
 
@@ -61,7 +69,7 @@ export abstract class RepackBaseCommand extends BaseCommand {
       return false
     }
 
-    const unsupported =  !isSupportedBindgenVersion(bindgenVersion) || !isSupportedBinaryenVersion(binaryenVersion)
+    const unsupported = !isSupportedBindgenVersion(bindgenVersion) || !isSupportedBinaryenVersion(binaryenVersion)
 
     if (unsupported) {
       report.reportError(MessageName.UNNAMED, 'Repack installation deprecated. Run `yarn repack update`')
@@ -78,10 +86,10 @@ export abstract class RepackBaseCommand extends BaseCommand {
       report.reportError(MessageName.UNNAMED, 'This project has no cargo workspaces')
       return false
     }
-    
+
     return true
   }
-  
+
   protected async validateProject(cwd: PortablePath, report: StreamReport): Promise<boolean> {
     const env = await this.validateEnv(report)
     const installation = await this.validateInstall(report)

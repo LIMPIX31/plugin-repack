@@ -14,10 +14,6 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:."\
     },\
     {\
-      "name": "example-bindings",\
-      "reference": "workspace:example-bindings"\
-    },\
-    {\
       "name": "repack",\
       "reference": "workspace:repack"\
     },\
@@ -29,7 +25,6 @@ const RAW_RUNTIME_STATE =
   "enableTopLevelFallback": true,\
   "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
   "fallbackExclusionList": [\
-    ["example-bindings", ["workspace:example-bindings"]],\
     ["plugin-repack", ["workspace:."]],\
     ["repack", ["workspace:repack"]],\
     ["yarn-plugin-repack", ["workspace:yarn-plugin"]]\
@@ -201,15 +196,6 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@arcanis/slice-ansi", "npm:1.1.1"],\
           ["grapheme-splitter", "npm:1.0.4"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
-    ["@crate/hello-world", [\
-      ["crate:crates/hello-world", {\
-        "packageLocation": "./.yarn/cache/@crate-hello-world-crate-ddf03104c6-ad9cd2edb3.zip/node_modules/@crate/hello-world/",\
-        "packageDependencies": [\
-          ["@crate/hello-world", "crate:crates/hello-world"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -1777,16 +1763,6 @@ const RAW_RUNTIME_STATE =
           ["esprima", "npm:4.0.1"]\
         ],\
         "linkType": "HARD"\
-      }]\
-    ]],\
-    ["example-bindings", [\
-      ["workspace:example-bindings", {\
-        "packageLocation": "./example-bindings/",\
-        "packageDependencies": [\
-          ["example-bindings", "workspace:example-bindings"],\
-          ["@crate/hello-world", "crate:crates/hello-world"]\
-        ],\
-        "linkType": "SOFT"\
       }]\
     ]],\
     ["execa", [\

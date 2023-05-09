@@ -35,7 +35,7 @@ export class RepackInstallCommand extends RepackBaseCommand {
             }
 
             if (!this.skipCheck) {
-              const invalid = !await this.validateEnv(report)
+              const invalid = !await this.validateEnv(report) || !await this.validateWorkspaces(project.cwd, report)
 
               if (invalid) {
                 return true

@@ -1,8 +1,9 @@
 import {
   Descriptor,
+  formatUtils,
   LinkType,
   Locator,
-  MinimalResolveOptions,
+  MessageName,
   miscUtils,
   Package,
   ResolveOptions,
@@ -16,23 +17,37 @@ import { PortablePath, ppath } from '@yarnpkg/fslib'
 export class CrateResolver implements Resolver {
   static protocol = 'crate:'
 
-  supportsDescriptor(descriptor: Descriptor, opts: MinimalResolveOptions): boolean {
-    return descriptor.range.startsWith(CrateResolver.protocol) && descriptor.scope === 'crate'
+  supportsDescriptor(descriptor: Descriptor, { report, project }: ResolveOptions): boolean {
+    const validRange = descriptor.range.startsWith(CrateResolver.protocol)
+    const validScope = descriptor.scope === 'crate'
+
+    if (!validScope) {
+      report.reportError(MessageName.UNNAMED, `You need to explicitly specify scope: ${formatUtils.pretty(project.configuration, '@crate/', 'green')}${descriptor.name}`)
+    }
+
+    return validRange && validScope
   }
 
-  supportsLocator(locator: Locator, opts: MinimalResolveOptions): boolean {
-    return locator.reference.startsWith(CrateResolver.protocol) && locator.scope === 'crate'
+  supportsLocator(locator: Locator, { report, project }: ResolveOptions): boolean {
+    const validReference = locator.reference.startsWith(CrateResolver.protocol)
+    const validScope = locator.scope === 'crate'
+
+    if (!validScope) {
+      report.reportError(MessageName.UNNAMED, `You need to explicitly specify scope: ${formatUtils.pretty(project.configuration, '@crate/', 'green')}${locator.name}`)
+    }
+
+    return validReference && validScope
   }
 
-  shouldPersistResolution(locator: Locator, opts: MinimalResolveOptions): boolean {
+  shouldPersistResolution(locator: Locator, opts: ResolveOptions): boolean {
     return false
   }
 
-  bindDescriptor(descriptor: Descriptor, fromLocator: Locator, opts: MinimalResolveOptions): Descriptor {
+  bindDescriptor(descriptor: Descriptor, fromLocator: Locator, opts: ResolveOptions): Descriptor {
     return descriptor
   }
 
-  getResolutionDependencies(descriptor: Descriptor, opts: MinimalResolveOptions): Record<string, Descriptor> {
+  getResolutionDependencies(descriptor: Descriptor, opts: ResolveOptions): Record<string, Descriptor> {
     return {}
   }
 
@@ -60,7 +75,8 @@ export class CrateResolver implements Resolver {
         if (range.test(candidate)) {
           return { candidate, ...workspace }
         }
-      } catch {}
+      } catch {
+      }
 
       return miscUtils.mapAndFilter.skip
     })
@@ -91,7 +107,7 @@ export class CrateResolver implements Resolver {
   async resolve(locator: Locator, opts: ResolveOptions): Promise<Package> {
     const workspacePath = ppath.join(
       opts.project.cwd,
-      locator.reference.slice(CrateResolver.protocol.length) as PortablePath
+      locator.reference.slice(CrateResolver.protocol.length) as PortablePath,
     )
 
     const manifest = await readCargoToml(workspacePath)

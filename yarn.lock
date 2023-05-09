@@ -146,13 +146,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crate/hello-world@crate:*":
-  version: 0.1.0
-  resolution: "@crate/hello-world@crate:crates/hello-world"
-  checksum: ad9cd2edb3d19b271476e0c59f1254efd357c231e65a021fa5d0c53a73c037956b0e4265179422d5986ec425b1f3e1568be22414e1c72546853385574c793938
-  languageName: node
-  linkType: hard
-
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -1221,14 +1214,6 @@ __metadata:
   checksum: 08b3015538b1f7f087a4ea49b5a3d8ff9590ecf7eb43511182c9198cfe168a5cc1736c2ae33263c79cfbe9e984c1880ee971b64ad96e7c84db74488e6ee93c1b
   languageName: node
   linkType: hard
-
-"example-bindings@workspace:example-bindings":
-  version: 0.0.0-use.local
-  resolution: "example-bindings@workspace:example-bindings"
-  dependencies:
-    "@crate/hello-world": "crate:*"
-  languageName: unknown
-  linkType: soft
 
 "execa@npm:^7.1.1":
   version: 7.1.1
