@@ -2,7 +2,6 @@
   "name": "example-bindings",
   "main": "src/index.ts",
   "dependencies": {
-    "hello-world": "crate:*",
-    "just-lib": "crate:*"
+    "@crate/hello-world": "crate:*"
   }
 }

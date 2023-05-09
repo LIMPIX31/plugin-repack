@@ -1,6 +1,6 @@
 import { bindgen, cargoBuild, optimize } from 'repack'
 import { PortablePath, ppath, xfs } from '@yarnpkg/fslib'
-import { FetchOptions, Locator, MessageName, Project, ReportError, tgzUtils } from '@yarnpkg/core'
+import {FetchOptions, Locator, MessageName, Project, ReportError, structUtils, tgzUtils} from '@yarnpkg/core'
 import { REPACK_INSTALL_LOCATION } from './constants'
 import { createPackage } from './create-package'
 import { reportCargoBuildOutput } from './utils'
@@ -10,7 +10,7 @@ import { readCargoToml } from './crate-utils'
 export async function buildCrate(locator: Locator, project: Project, opts: FetchOptions) {
   const tempDir = await xfs.mktempPromise()
 
-  const packagePath = ppath.join(tempDir, 'node_modules', locator.name as PortablePath)
+  const packagePath = ppath.join(tempDir, 'node_modules', structUtils.stringifyIdent(locator) as PortablePath)
   const workspacePath = ppath.join(opts.project.cwd, locator.reference.slice(CrateResolver.protocol.length) as PortablePath)
 
   const manifest = await readCargoToml(workspacePath)

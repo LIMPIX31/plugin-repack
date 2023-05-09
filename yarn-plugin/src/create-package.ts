@@ -1,8 +1,8 @@
-import { Locator } from '@yarnpkg/core'
+import {Locator, structUtils} from '@yarnpkg/core'
 
 export function createPackage(locator: Locator) {
   return {
-    name: locator.name,
+    name: structUtils.stringifyIdent(locator),
     main: "index.js",
     types: "index.d.ts"
   }

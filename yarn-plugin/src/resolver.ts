@@ -17,11 +17,11 @@ export class CrateResolver implements Resolver {
   static protocol = 'crate:'
 
   supportsDescriptor(descriptor: Descriptor, opts: MinimalResolveOptions): boolean {
-    return descriptor.range.startsWith(CrateResolver.protocol)
+    return descriptor.range.startsWith(CrateResolver.protocol) && descriptor.scope === 'crate'
   }
 
   supportsLocator(locator: Locator, opts: MinimalResolveOptions): boolean {
-    return locator.reference.startsWith(CrateResolver.protocol)
+    return locator.reference.startsWith(CrateResolver.protocol) && locator.scope === 'crate'
   }
 
   shouldPersistResolution(locator: Locator, opts: MinimalResolveOptions): boolean {

@@ -34,7 +34,7 @@ export class RepackRebuildCommand extends RepackBaseCommand {
 
           for (const { path, manifest } of workspaces!) {
             if (this.idents.length === 0 || this.idents.includes(manifest.package.name) || this.idents.includes('*')) {
-              const locator = structUtils.parseLocator(`${manifest.package.name}@${CrateResolver.protocol}${path}`)
+              const locator = structUtils.parseLocator(`@crate/${manifest.package.name}@${CrateResolver.protocol}${path}`)
 
               const mirrorEntryPath = cache.getLocatorMirrorPath(locator)
               const cacheEntryPath = cache.getLocatorPath(locator, project.storedChecksums.get(locator.locatorHash) ?? null)

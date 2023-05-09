@@ -72,4 +72,4 @@ git checkout examples
 ## Misc
 
 ### `@crate` scope
-...is optional. It is needed to restrict your dependencies semantically, so that you can understand that you are importing a crate and not something else
+...is required. It is needed to restrict your dependencies semantically, so that you can understand that you are importing a crate and not something else

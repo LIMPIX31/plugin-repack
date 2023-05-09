@@ -205,6 +205,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["@crate/hello-world", [\
+      ["crate:crates/hello-world", {\
+        "packageLocation": "./.yarn/cache/@crate-hello-world-crate-ddf03104c6-ad9cd2edb3.zip/node_modules/@crate/hello-world/",\
+        "packageDependencies": [\
+          ["@crate/hello-world", "crate:crates/hello-world"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["@nodelib/fs.scandir", [\
       ["npm:2.1.5", {\
         "packageLocation": "./.yarn/cache/@nodelib-fs.scandir-npm-2.1.5-89c67370dd-5f309a3b37.zip/node_modules/@nodelib/fs.scandir/",\
@@ -1775,8 +1784,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./example-bindings/",\
         "packageDependencies": [\
           ["example-bindings", "workspace:example-bindings"],\
-          ["hello-world", "crate:crates/hello-world"],\
-          ["just-lib", "crate:crates/just-lib"]\
+          ["@crate/hello-world", "crate:crates/hello-world"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -1985,15 +1993,6 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/has-flag-npm-4.0.0-32af9f0536-71f182c441.zip/node_modules/has-flag/",\
         "packageDependencies": [\
           ["has-flag", "npm:4.0.0"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
-    ["hello-world", [\
-      ["crate:crates/hello-world", {\
-        "packageLocation": "./.yarn/cache/hello-world-crate-e45092aa03-825a643839.zip/node_modules/hello-world/",\
-        "packageDependencies": [\
-          ["hello-world", "crate:crates/hello-world"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -2245,15 +2244,6 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/json-buffer-npm-3.0.1-f8f6d20603-33bf05e079.zip/node_modules/json-buffer/",\
         "packageDependencies": [\
           ["json-buffer", "npm:3.0.1"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
-    ["just-lib", [\
-      ["crate:crates/just-lib", {\
-        "packageLocation": "./.yarn/cache/just-lib-crate-13a45c1261-318f294112.zip/node_modules/just-lib/",\
-        "packageDependencies": [\
-          ["just-lib", "crate:crates/just-lib"]\
         ],\
         "linkType": "HARD"\
       }]\
