@@ -74,6 +74,21 @@ You can find examples in `examples` branch
 git checkout examples
 ```
 
+## Known issues
+
+### When using vite, you need to exclude crate
+```ts
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    target: 'esnext'
+  },
+  optimizeDeps: {
+    exclude: ['@crate/my-crate']
+  },
+})
+```
+
 ## Misc
 
 ### `@crate` scope
