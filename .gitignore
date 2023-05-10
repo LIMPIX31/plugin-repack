@@ -5,6 +5,7 @@
 !.yarn/sdks
 !.yarn/versions
 !.yarn/cache
+!.yarn/repack
 logs
 *.log
 npm-debug.log*

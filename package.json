@@ -1,13 +1,11 @@
 {
-  "name": "plugin-repack",
+  "name": "plugin-repack-examples",
   "private": true,
   "workspaces": [
-    "yarn-plugin",
-    "crates/repack",
-    "repack",
-    "example-bindings"
+    "app"
   ],
   "devDependencies": {
     "typescript": "5"
-  }
+  },
+  "packageManager": "yarn@3.5.1"
 }

@@ -1,0 +1,14 @@
+{
+  "name": "app",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "yarn node src/index.js"
+  },
+  "dependencies": {
+    "@crate/hello-world": "crate:*"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1"
+  }
+}
