@@ -20,6 +20,9 @@ cargo new --lib hello-world
 
 #### ...and add target
 ```toml
+[lib]
+crate-type = ["cdylib"]
+
 [repack]
 target = "web" # or "nodejs"
 ```
