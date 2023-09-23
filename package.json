@@ -3,9 +3,7 @@
   "private": true,
   "workspaces": [
     "yarn-plugin",
-    "crates/repack",
-    "repack",
-    "example-bindings"
+    "crate"
   ],
   "devDependencies": {
     "typescript": "5"

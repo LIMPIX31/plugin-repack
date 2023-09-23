@@ -41,6 +41,6 @@
   },
   "include": [
     "yarn-plugin",
-    "repack"
+    "crate"
   ]
 }

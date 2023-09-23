@@ -11,32 +11,33 @@ import {
   semverUtils,
   structUtils,
 } from '@yarnpkg/core'
-import { fetchCargoWorkspaces, readCargoToml } from './crate-utils'
 import { PortablePath, ppath } from '@yarnpkg/fslib'
+import { importRepackProtocol } from './protocol'
 
-export class CrateResolver implements Resolver {
-  static protocol = 'crate:'
-
+export class RepackResolver implements Resolver {
   supportsDescriptor(descriptor: Descriptor, { report, project }: ResolveOptions): boolean {
-    const validRange = descriptor.range.startsWith(CrateResolver.protocol)
-    const validScope = descriptor.scope === 'crate'
+    const protocol = descriptor.range
 
-    if (!validScope) {
-      report.reportError(MessageName.UNNAMED, `You need to explicitly specify scope: ${formatUtils.pretty(project.configuration, '@crate/', 'green')}${descriptor.name}`)
+    const { manifest } = project.getWorkspaceByCwd(project.cwd)
+    const { identHash } = structUtils.makeIdent('plugin-repack', protocol)
+
+    const importable = manifest.devDependencies.has(identHash)
+
+    if (!/[a-z0-9]/.test(protocol) || !importable) {
+      return false
     }
 
-    return validRange && validScope
+    const validScope = descriptor.scope === protocol
+
+    if (!validScope) {
+      report.reportError(MessageName.UNNAMED, `You need to explicitly specify scope: ${formatUtils.pretty(project.configuration, `@${protocol}/`, 'green')}${descriptor.name}`)
+    }
+
+    return validScope
   }
 
   supportsLocator(locator: Locator, { report, project }: ResolveOptions): boolean {
-    const validReference = locator.reference.startsWith(CrateResolver.protocol)
-    const validScope = locator.scope === 'crate'
-
-    if (!validScope) {
-      report.reportError(MessageName.UNNAMED, `You need to explicitly specify scope: ${formatUtils.pretty(project.configuration, '@crate/', 'green')}${locator.name}`)
-    }
-
-    return validReference && validScope
+    return true
   }
 
   shouldPersistResolution(locator: Locator, opts: ResolveOptions): boolean {
@@ -52,29 +53,29 @@ export class CrateResolver implements Resolver {
   }
 
   async getCandidates(descriptor: Descriptor, dependencies: Record<string, Package>, opts: ResolveOptions): Promise<Array<Locator>> {
-    const range = semverUtils.validRange(descriptor.range.slice(CrateResolver.protocol.length))
+    const repacker = await importRepackProtocol(descriptor)
 
-    if (range === null) {
-      throw new Error(`Expected a valid range, got ${descriptor.range.slice(CrateResolver.protocol.length)}`)
-    }
-
-    const workspaces = await fetchCargoWorkspaces(opts.project.cwd)
-
-    if (!workspaces) {
+    if (!repacker?.candidates) {
+      opts.report.reportError(MessageName.UNNAMED, 'Repacker should export `candidates` function, which returns an array with complete candidate metadata')
       return []
     }
 
-    const candidates = miscUtils.mapAndFilter(workspaces, workspace => {
-      if (workspace.manifest.package.name !== descriptor.name) {
+    const repackerCandidates = repacker.candidates(descriptor, opts)
+
+    if (!Array.isArray(repackerCandidates)) {
+      opts.report.reportError(MessageName.UNNAMED, 'The `candidates` function from repacker should return candidate array')
+      return []
+    }
+
+    const candidates = miscUtils.mapAndFilter(repackerCandidates, repackerCandidate => {
+      if (repackerCandidate.name !== descriptor.name) {
         return miscUtils.mapAndFilter.skip
       }
 
       try {
-        const candidate = new semverUtils.SemVer(workspace.manifest.package.version)
+        const candidate = new semverUtils.SemVer(repackerCandidate.version)
 
-        if (range.test(candidate)) {
-          return { candidate, ...workspace }
-        }
+        return { candidate, ...repackerCandidate }
       } catch {
       }
 
@@ -83,19 +84,13 @@ export class CrateResolver implements Resolver {
 
     candidates.sort(({ candidate: a }, { candidate: b }) => -a.compare(b))
 
-    return candidates.map(workspace => structUtils.makeLocator(descriptor, `${CrateResolver.protocol}${workspace.path}`))
+    return candidates.map(workspace => structUtils.makeLocator(descriptor, `${descriptor.scope}:${workspace.path}`))
   }
 
   async getSatisfying(descriptor: Descriptor, dependencies: Record<string, Package>, locators: Array<Locator>, opts: ResolveOptions): Promise<{
     locators: Array<Locator>;
     sorted: boolean
   }> {
-    const range = semverUtils.validRange(descriptor.range.slice(CrateResolver.protocol.length))
-
-    if (range === null) {
-      throw new Error(`Expected a valid range, got ${descriptor.range.slice(CrateResolver.protocol.length)}`)
-    }
-
     const [locator] = await this.getCandidates(descriptor, dependencies, opts)
 
     return {
@@ -107,15 +102,21 @@ export class CrateResolver implements Resolver {
   async resolve(locator: Locator, opts: ResolveOptions): Promise<Package> {
     const workspacePath = ppath.join(
       opts.project.cwd,
-      locator.reference.slice(CrateResolver.protocol.length) as PortablePath,
+      locator.reference.split(':')[1] as PortablePath,
     )
 
-    const manifest = await readCargoToml(workspacePath)
+    const repacker = await importRepackProtocol(locator)
+
+    if (!repacker.fetchManifestByCwd) {
+      throw new Error('Missing `fetchManifestByCwd` export from repacker')
+    }
+
+    const manifest = await repacker?.fetchManifestByCwd(workspacePath)
 
     return {
       ...locator,
 
-      version: manifest!.package.version ?? '0.0.0',
+      version: manifest.version ?? '0.0.0',
 
       languageName: 'node',
       linkType: LinkType.HARD,

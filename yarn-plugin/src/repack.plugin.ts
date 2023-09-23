@@ -1,11 +1,10 @@
 import { Plugin } from '@yarnpkg/core'
-import { RepackInstallCommand } from './repack-install.command'
-import { CrateResolver } from './resolver'
+import { RepackResolver } from './resolver'
 import { CrateFetcher } from './fetcher'
 import { RepackRebuildCommand } from './repack-rebuild.command'
 
 export const plugin: Plugin = {
-  commands: [RepackInstallCommand, RepackRebuildCommand],
-  resolvers: [CrateResolver],
+  commands: [RepackRebuildCommand],
+  resolvers: [RepackResolver],
   fetchers: [CrateFetcher],
 }

@@ -1,7 +1,9 @@
 {
-  "name": "repack",
+  "name": "@plugin-repack/crate",
   "main": "src/index.ts",
   "dependencies": {
+    "@yarnpkg/core": "^4.0.0-rc.44",
+    "@yarnpkg/fslib": "^3.0.0-rc.44",
     "execa": "^7.1.1",
     "rxjs": "^7.8.1",
     "semver": "^7.5.0",

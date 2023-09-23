@@ -1,11 +1,9 @@
-import { RepackBaseCommand } from './repack-base.command'
 import { Option } from 'clipanion'
-import { Cache, Configuration, formatUtils, MessageName, Project, StreamReport, structUtils } from '@yarnpkg/core'
-import { ppath, xfs } from '@yarnpkg/fslib'
-import { fetchCargoWorkspaces } from './crate-utils'
-import { CrateResolver } from './resolver'
+import { Cache, Configuration, Project, StreamReport, structUtils } from '@yarnpkg/core'
+import { xfs } from '@yarnpkg/fslib'
+import { BaseCommand } from '@yarnpkg/cli'
 
-export class RepackRebuildCommand extends RepackBaseCommand {
+export class RepackRebuildCommand extends BaseCommand {
   static paths = [['repack', 'rebuild']]
 
   release = Option.Boolean('-r, --release')
@@ -21,53 +19,15 @@ export class RepackRebuildCommand extends RepackBaseCommand {
         stdout: this.context.stdout,
       },
       async (report) => {
-        let stop!: boolean | undefined
+        await report.startTimerPromise('Cleaning previous build(s)', async () => {
+          const regexp = new RegExp(`(${this.idents.map(structUtils.parseIdent).map(ident => `${ident.scope}-${ident.name}-${ident.scope}`).join('|')})`)
 
-        const valid = await this.validateProject(project.cwd, report)
-
-        if (!valid) {
-          return
-        }
-
-        stop = await report.startTimerPromise('Cleaning previous build(s)', async () => {
-          const workspaces = await fetchCargoWorkspaces(project.cwd)
-
-          for (const { path, manifest } of workspaces!) {
-            if (this.idents.length === 0 || this.idents.includes(manifest.package.name) || this.idents.includes('*')) {
-              const locator = structUtils.parseLocator(`@crate/${manifest.package.name}@${CrateResolver.protocol}${path}`)
-
-              const mirrorEntryPath = cache.getLocatorMirrorPath(locator)
-              const cacheEntryPath = cache.getLocatorPath(locator, project.storedChecksums.get(locator.locatorHash) ?? null)
-
-              if (!mirrorEntryPath && !cacheEntryPath) {
-                return true
-              }
-
-              project.storedChecksums.delete(locator.locatorHash)
-
-              if (cache.immutable) {
-                report.reportError(MessageName.IMMUTABLE_CACHE, `${formatUtils.pretty(configuration, ppath.basename(cacheEntryPath ?? mirrorEntryPath!), `magenta`)} cannot be rebuild, because the cache is immutable`)
-                return true
-              } else {
-                if ((cacheEntryPath && await xfs.existsPromise(cacheEntryPath)) || (mirrorEntryPath && await xfs.existsPromise(mirrorEntryPath))) {
-                  report.reportInfo(MessageName.UNUSED_CACHE_ENTRY, `${formatUtils.pretty(configuration, ppath.basename(cacheEntryPath ?? mirrorEntryPath!), `magenta`)}`)
-                } else {
-                  report.reportInfo(MessageName.UNNAMED, `${formatUtils.pretty(configuration, ppath.basename(cacheEntryPath ?? mirrorEntryPath!), `red`)}`)
-                }
-
-                if (mirrorEntryPath) {
-                  await xfs.removePromise(mirrorEntryPath)
-                }
-
-                if (cacheEntryPath) {
-                  await xfs.removePromise(cacheEntryPath)
-                }
-              }
+          for (const entry of await xfs.readdirPromise(cache.cwd)) {
+            if (regexp.test(entry)) {
+              cache.markedFiles.delete(entry)
             }
           }
         })
-
-        if (stop) return
 
         if (this.release) {
           configuration.values.set('repack-release', true)
