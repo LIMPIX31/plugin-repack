@@ -1,50 +1,58 @@
-import { Observable } from 'rxjs'
-import { InstallFailedException, UnknownInstallException } from './exceptions'
-import { Writable } from 'stream'
-import { createWriteStream } from 'node:fs'
+import { createWriteStream }       from 'node:fs'
+import { Writable }                from 'stream'
+
+import { Observable }              from 'rxjs'
+
+import { InstallFailedException }  from './exceptions'
+import { UnknownInstallException } from './exceptions'
 
 export interface DownloadProgress {
-  total: number
-  transferred: number
+	total: number
+	transferred: number
 }
 
 export function download(url: string, dest: string): Observable<DownloadProgress> {
-  return new Observable<DownloadProgress>(subscriber => {
-    const controller = new AbortController()
+	return new Observable<DownloadProgress>((subscriber) => {
+		const controller = new AbortController()
 
-    ;(async () => {
-      const response = await fetch(url)
+		;(async () => {
+			const response = await fetch(url)
 
-      if (response.status !== 200) {
-        throw new InstallFailedException('Non-200 status')
-      }
+			if (response.status !== 200) {
+				throw new InstallFailedException('Non-200 status')
+			}
 
-      const { body: readable, headers } = response
+			const { body: readable, headers } = response
 
-      if (!headers.has('content-length')) {
-        throw new UnknownInstallException('Invalid content-length header')
-      }
+			if (!headers.has('content-length')) {
+				throw new UnknownInstallException('Invalid content-length header')
+			}
 
-      const total = parseInt(headers.get('content-length')!)
+			const total = parseInt(headers.get('content-length')!, 10)
 
-      if (!readable) {
-        throw new UnknownInstallException('readable is null')
-      }
+			if (!readable) {
+				throw new UnknownInstallException('readable is null')
+			}
 
-      let transferred = 0
+			let transferred = 0
 
-      const { signal } = controller
+			const { signal } = controller
 
-      await readable.pipeThrough(new TransformStream({
-        transform(chunk, controller) {
-          controller.enqueue(chunk)
-          subscriber.next({ total, transferred: transferred += chunk.length })
-        }
-      }), { signal }).pipeTo(Writable.toWeb(createWriteStream(dest)), { signal })
+			await readable
+				.pipeThrough(
+					new TransformStream({
+						transform(chunk, controller) {
+							controller.enqueue(chunk)
+							subscriber.next({ total, transferred: (transferred += chunk.length) })
+						},
+					}),
+					{ signal },
+				)
+				.pipeTo(Writable.toWeb(createWriteStream(dest)), { signal })
 
-      subscriber.complete()
-    })()
+			subscriber.complete()
+		})()
 
-    return () => controller.abort()
-  })
+		return () => controller.abort()
+	})
 }

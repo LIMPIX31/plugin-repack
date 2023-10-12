@@ -2,6 +2,7 @@
   "name": "yarn-plugin-repack",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "main": "src/index.ts",
   "scripts": {
     "build": "builder build plugin",
@@ -9,22 +10,22 @@
     "postpack": "rm -rf dist"
   },
   "dependencies": {
-    "clipanion": "^3.2.0",
+    "clipanion": "3.2.0",
     "repack": "workspace:*",
-    "rxjs": "^7.8.1",
-    "semver": "^7.5.0",
-    "toml": "^3.0.0"
+    "rxjs": "7.8.1",
+    "semver": "7.5.4",
+    "toml": "3.0.0"
   },
   "devDependencies": {
-    "@types/semver": "^7.3.13",
-    "@yarnpkg/builder": "^4.0.0-rc.42",
-    "@yarnpkg/cli": "^4.0.0-rc.42",
-    "@yarnpkg/core": "^4.0.0-rc.42",
-    "@yarnpkg/fslib": "^3.0.0-rc.42"
+    "@types/semver": "7.5.3",
+    "@yarnpkg/builder": "4.0.0-rc.53",
+    "@yarnpkg/cli": "4.0.0-rc.53",
+    "@yarnpkg/core": "4.0.0-rc.53",
+    "@yarnpkg/fslib": "3.0.0-rc.53"
   },
   "peerDependencies": {
-    "@yarnpkg/cli": "^4.0.0-rc.42",
-    "@yarnpkg/core": "^4.0.0-rc.42",
-    "@yarnpkg/fslib": "^4.0.0-rc.42"
+    "@yarnpkg/cli": "4.0.0-rc.53",
+    "@yarnpkg/core": "4.0.0-rc.53",
+    "@yarnpkg/fslib": "4.0.0-rc.53"
   }
 }
