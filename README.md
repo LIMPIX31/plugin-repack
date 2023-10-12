@@ -1,4 +1,4 @@
-# Repack
+# Repack 1.1
 ###### Yarn plugin for easy integration of rust wasm into a web or nodejs project</h6>
 
 ## Installation
